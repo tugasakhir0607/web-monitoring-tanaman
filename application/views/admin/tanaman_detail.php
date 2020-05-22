@@ -18,9 +18,10 @@
 						<li class="active"><a href="#penanaman" data-toggle="tab">Penanaman</a></li>
 						<li><a href="#pengguna" data-toggle="tab">Pengguna</a></li>
 						<li><a href="#penyiraman" data-toggle="tab">Penyiraman</a></li>
-						<li><a href="#pemupukan" data-toggle="tab">Pemupukan</a></li>
+<!--						<li><a href="#pemupukan" data-toggle="tab">Pemupukan</a></li>-->
 						<li><a href="#kelembaban" data-toggle="tab">Kelembaban</a></li>
 						<li><a href="#galeri" data-toggle="tab">Galeri</a></li>
+						<li><a href="#evaluasi" data-toggle="tab">Evaluasi</a></li>
 					</ul>
 					<div class="tab-content">
 						<div class="active tab-pane" id="penanaman">
@@ -33,7 +34,7 @@
 									<label for="penyiraman_perhari">Penyiraman Perhari</label>
 									<input type="text" class="form-control" id="penyiraman_perhari" name="penyiraman_perhari" value="<?= $tanaman->penyiraman_tanaman; ?>" disabled>
 								</div>
-								<div class="form-group">
+								<div class="form-group" style="display: none">
 									<label for="pemupukan_perminggu">Pemupukan Perminggu</label>
 									<input type="text" class="form-control" id="pemupukan_perminggu" name="pemupukan_perminggu" value="<?= $tanaman->pemupukan_tanaman; ?>" disabled>
 								</div>
@@ -93,26 +94,26 @@
 								</tbody>
 							</table>
 						</div>
-						<div class="tab-pane" id="pemupukan">
-							<table id="example2" class="table table-bordered table-striped">
-								<thead>
-								<tr>
-									<th>No</th>
-									<th>Tanggal Pemupukan</th>
-									<th>Jam Pemupukan</th>
-								</tr>
-								</thead>
-								<tbody>
-								<?php for ($i=1;$i<=30;$i++):?>
-									<tr>
-										<td><?= $i; ?></td>
-										<td>25 Februari 2020</td>
-										<td>0<?= $i; ?>:10</td>
-									</tr>
-								<?php endfor; ?>
-								</tbody>
-							</table>
-						</div>
+<!--						<div class="tab-pane" id="pemupukan">-->
+<!--							<table id="example2" class="table table-bordered table-striped">-->
+<!--								<thead>-->
+<!--								<tr>-->
+<!--									<th>No</th>-->
+<!--									<th>Tanggal Pemupukan</th>-->
+<!--									<th>Jam Pemupukan</th>-->
+<!--								</tr>-->
+<!--								</thead>-->
+<!--								<tbody>-->
+<!--								--><?php //for ($i=1;$i<=30;$i++):?>
+<!--									<tr>-->
+<!--										<td>--><?//= $i; ?><!--</td>-->
+<!--										<td>25 Februari 2020</td>-->
+<!--										<td>0--><?//= $i; ?><!--:10</td>-->
+<!--									</tr>-->
+<!--								--><?php //endfor; ?>
+<!--								</tbody>-->
+<!--							</table>-->
+<!--						</div>-->
 						<div class="tab-pane" id="kelembaban">
 							<table id="example3" class="table table-bordered table-striped">
 								<thead>
@@ -153,24 +154,32 @@
 						</div>
 						<div class="tab-pane" id="galeri">
 							<div class="row margin-bottom">
-								<div class="col-sm-6">
-									<img class="img-responsive" src="<?= base_url('assets/backend/dist/img/photo1.png'); ?>" alt="Photo">
-								</div>
-								<div class="col-sm-6">
-									<div class="row">
-										<div class="col-sm-6">
-											<img class="img-responsive" src="<?= base_url('assets/backend/dist/img/photo2.png'); ?>" alt="Photo">
-											<br>
-											<img class="img-responsive" src="<?= base_url('assets/backend/dist/img/photo3.jpg'); ?>" alt="Photo">
-										</div>
-										<div class="col-sm-6">
-											<img class="img-responsive" src="<?= base_url('assets/backend/dist/img/photo4.jpg'); ?>" alt="Photo">
-											<br>
-											<img class="img-responsive" src="<?= base_url('assets/backend/dist/img/photo1.png'); ?>" alt="Photo">
-										</div>
+								<?php foreach ($galeri as $it_gal):?>
+									<div class="col-sm-6 col-md-4">
+										<img class="img-responsive" src="<?= base_url('assets/img/galeri/'.$it_gal->foto); ?>" alt="Photo">
 									</div>
-								</div>
+								<?php endforeach; ?>
 							</div>
+						</div>
+						<div class="tab-pane" id="evaluasi">
+							<form action="<?= base_url('Api/downloadEvaluasi'); ?>" method="post" target="_blank">
+								<div class="form-group">
+									<label for="no_hp">Foto</label>
+									<input type="hidden" name="id_tb_tanaman" value="<?= $evaluasi->id_tb_tanaman; ?>">
+									<center>
+										<img src="<?= base_url('assets/img/evaluasi/'.$evaluasi->foto_evaluasi); ?>" class="img-responsive img-rounded" style="width: 40%;"/>
+									</center>
+								</div>
+								<div class="form-group">
+									<label for="nama">Saran Evaluasi</label>
+									<textarea class="form-control" rows="6" disabled><?= $evaluasi->saran_evaluasi; ?></textarea>
+								</div>
+								<div class="form-group">
+									<label for="username">Keterangan Evaluasi</label>
+									<textarea class="form-control" rows="6" disabled><?= $evaluasi->keterangan_evaluasi; ?></textarea>
+								</div>
+								<button type="submit" class="btn btn-success pull-right">Cetak PDF</button>
+							</form>
 						</div>
 					</div>
 				</div>

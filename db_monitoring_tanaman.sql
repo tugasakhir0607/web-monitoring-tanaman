@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 14 Bulan Mei 2020 pada 12.01
+-- Waktu pembuatan: 21 Bulan Mei 2020 pada 14.15
 -- Versi server: 10.1.38-MariaDB
 -- Versi PHP: 5.6.40
 
@@ -30,11 +30,22 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `tb_evaluasi` (
   `id_tb_evaluasi` int(10) NOT NULL,
+  `id_tb_tanaman` int(10) DEFAULT NULL,
+  `saran_evaluasi` mediumtext,
   `keterangan_evaluasi` mediumtext,
   `foto_evaluasi` varchar(20) DEFAULT NULL,
   `waktu` datetime DEFAULT NULL,
   `delflage` int(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `tb_evaluasi`
+--
+
+INSERT INTO `tb_evaluasi` (`id_tb_evaluasi`, `id_tb_tanaman`, `saran_evaluasi`, `keterangan_evaluasi`, `foto_evaluasi`, `waktu`, `delflage`) VALUES
+(1, 1, 'bagus', 'bagus', '200520195812.jpg', NULL, 1),
+(5, 5, NULL, NULL, NULL, NULL, 1),
+(6, 6, NULL, NULL, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -2448,7 +2459,7 @@ ALTER TABLE `tb_tanaman`
 -- AUTO_INCREMENT untuk tabel `tb_evaluasi`
 --
 ALTER TABLE `tb_evaluasi`
-  MODIFY `id_tb_evaluasi` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tb_evaluasi` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `tb_galeri`

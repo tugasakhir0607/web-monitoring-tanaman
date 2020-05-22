@@ -10,6 +10,7 @@ class Api extends CI_Controller {
 		parent::__construct();
 		$this->load->model('M_api');
 		date_default_timezone_set('Asia/Jakarta');
+    	$this->load->helper('print_evaluasi_helper');
 	}
 
 	public function index()
@@ -210,6 +211,68 @@ class Api extends CI_Controller {
 		$where['delflage'] = 1;
 		$stmt = $this->M_api->getGaleri($where)->result();
 		$this->setJSON(array('result'=>$stmt));
+	}
+
+	public function api_getEvaluasi() {
+		$where['tb_evaluasi.id_tb_tanaman'] = $this->input->post('id_tb_tanaman');
+		$stmt = $this->M_api->getEvaluasi($where)->result();
+		$this->setJSON(array('result'=>$stmt));
+	}
+
+	public function api_updateEvaluasi(){
+		$uploadPath = './assets/img/evaluasi/';
+		$config['upload_path'] = $uploadPath;
+		$config['allowed_types'] = '*';
+		$config['file_name'] = date('ymdHis');
+
+		$this->load->library('upload', $config);
+		$this->upload->initialize($config);
+		if($this->upload->do_upload('foto')){
+			$fileData = $this->upload->data();
+			$nama_foto = $fileData['file_name'];
+			$tipe = $fileData['file_type'];
+			if ($tipe == "image/jpeg" || $tipe == "image/png" || $tipe == "image/jpg") {
+				$image_data = $this->upload->data();
+				$config['image_library'] = 'gd2';
+				$config['source_image'] = $image_data['full_path'];
+				$config['maintain_ratio'] = TRUE;
+				$config['width'] = 822;
+				$this->load->library('image_lib');
+				$this->image_lib->initialize($config);
+				$this->image_lib->resize();
+				$this->image_lib->clear();
+			}
+			$update['foto_evaluasi'] = $nama_foto;
+			$foto_lama = $this->input->post('foto_lama');
+			if (file_exists($uploadPath.$foto_lama)) {
+				unlink($uploadPath.$foto_lama);
+			}
+		}
+
+		$where['id_tb_tanaman'] = $this->input->post('id_tb_tanaman');
+		$update['saran_evaluasi'] = $this->input->post('saran_evaluasi');
+		$update['keterangan_evaluasi'] = $this->input->post('keterangan_evaluasi');
+		$stmt = $this->M_api->updateEvaluasi($where,$update);
+		if ($stmt){
+			array_push($this->result,array('status'=>1));
+		} else {
+			array_push($this->result,array('status'=>0));
+		}
+		$this->setJSON(array('result'=>$this->result));
+	}
+
+	public function downloadEvaluasi()
+	{
+		$where['tb_evaluasi.id_tb_tanaman'] = $this->input->post('id_tb_tanaman');
+		$stmt = $this->M_api->getEvaluasi($where)->row();
+
+		$pdf = new Print_Evaluasi_Helper();
+	    $pdf->AddPage('P','A4');
+	    $pdf->judul();
+	    $pdf->garis();
+	    $pdf->teks($stmt);
+	    $pdf->penutup();
+	    $pdf->Output('Evaluasi Monitoring Tanaman.pdf','I');
 	}
 
 	public function api_inputGaleri(){

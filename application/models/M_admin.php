@@ -44,6 +44,14 @@ class M_admin extends CI_Model
 			->get_where('tb_sensor',array('id_tb_tanaman'=>$id,'pompa'=>"ON"));
 	}
 
+	public function getTanamanGaleri($id){
+		return $this->db->get_where('tb_galeri',array('id_tb_tanaman'=>$id));
+	}
+
+	public function getTanamanEvaluasi($id){
+		return $this->db->get_where('tb_evaluasi',array('id_tb_tanaman'=>$id));
+	}
+
 	public function profil_ubah($where,$udpate){
 		return $this->db->where($where)->update('tb_pengguna',$udpate);
 	}
@@ -54,5 +62,13 @@ class M_admin extends CI_Model
 
 	public function penggunaUbah($where,$udpate){
 		return $this->db->where($where)->update('tb_pengguna',$udpate);
+	}
+
+	public function grafikPengguna($where){
+		return $this->db->like('waktu',$where)->get('tb_pengguna');
+	}
+
+	public function grafikTanaman($where){
+		return $this->db->like('waktu',$where)->get('tb_tanaman');
 	}
 }

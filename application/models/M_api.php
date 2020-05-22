@@ -19,7 +19,11 @@ class M_api extends CI_Model
 	}
 
 	public function inputTanaman($input){
-		return $this->db->insert('tb_tanaman',$input);
+		$this->db->insert('tb_tanaman',$input);
+		$id = $this->db->insert_id();
+		$input['id_tb_tanaman'] = $id;
+		$input['waktu'] = date('Y-m-d H:i:s');
+		return $this->db->insert('tb_evaluasi',$input);
 	}
 
 	public function updateTanaman($where,$update){
@@ -65,4 +69,20 @@ class M_api extends CI_Model
 	{
 		return $this->db->where($where)->update('tb_pengguna',$update);
 	}
+
+	public function getEvaluasi($where)
+	{
+		return $this->db->select('tb_tanaman.nama_tanaman, tb_tanaman.deskripsi_tanaman, DATE(tb_tanaman.waktu) as tgl_penanaman,
+			tb_pengguna.nama_pengguna,
+			tb_evaluasi.*')
+		->join('tb_tanaman','tb_tanaman.id_tb_tanaman = tb_evaluasi.id_tb_tanaman')
+		->join('tb_pengguna','tb_pengguna.id_tb_pengguna = tb_tanaman.id_tb_pengguna')
+		->where($where)->get('tb_evaluasi');
+	}
+
+	public function updateEvaluasi($where,$update)
+	{
+		return $this->db->where($where)->update('tb_evaluasi',$update);
+	}
+
 }

@@ -36,7 +36,7 @@
 			<div class="col-sm-12">
 				<div class="box box-success">
 					<div class="box-header with-border">
-						<h3 class="box-title">Grafik Penanaman dan Pengguna</h3>
+						<h3 class="box-title">Grafik Penanaman dan Pengguna Tahun <?= date('Y'); ?></h3>
 						<div class="box-tools pull-right">
 							<button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
 							<button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
@@ -47,6 +47,10 @@
 							<canvas id="barChart" style="height:230px"></canvas>
 						</div>
 					</div>
+					<div class="box-footer">
+						<span class="label label-success">Data Penanaman</span>
+						<span class="label label-info">Data Pengguna</span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -56,27 +60,27 @@
 <script>
     $(function () {
         var areaChartData = {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            labels: <?= json_encode($dt_bulan) ; ?>,
             datasets: [
                 {
-                    label: "Electronics",
-                    fillColor: "rgba(210, 214, 222, 1)",
-                    strokeColor: "rgba(210, 214, 222, 1)",
-                    pointColor: "rgba(210, 214, 222, 1)",
-                    pointStrokeColor: "#c1c7d1",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: [65, 59, 80, 81, 56, 55, 40]
+                    label: "Tanaman",
+                    fillColor: "#00a65a",
+                    strokeColor: "#00a65a",
+                    pointColor: "#00a65a",
+                    pointStrokeColor: "#00a65a",
+                    pointHighlightFill: "#00a65a",
+                    pointHighlightStroke: "#00a65a",
+                    data: <?= json_encode($dt_tanaman) ; ?>
                 },
                 {
-                    label: "Digital Goods",
-                    fillColor: "rgba(60,141,188,0.9)",
-                    strokeColor: "rgba(60,141,188,0.8)",
-                    pointColor: "#3b8bba",
-                    pointStrokeColor: "rgba(60,141,188,1)",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(60,141,188,1)",
-                    data: [28, 48, 40, 19, 86, 27, 90]
+                    label: "Pengguna",
+                    fillColor: "#00c0ef",
+                    strokeColor: "#00c0ef",
+                    pointColor: "#00c0ef",
+                    pointStrokeColor: "#00c0ef",
+                    pointHighlightFill: "#00c0ef",
+                    pointHighlightStroke: "#00c0ef",
+                    data: <?= json_encode($dt_pengguna) ; ?>
                 }
             ]
         };
@@ -84,9 +88,6 @@
         var barChartCanvas = $("#barChart").get(0).getContext("2d");
         var barChart = new Chart(barChartCanvas);
         var barChartData = areaChartData;
-        barChartData.datasets[1].fillColor = "#00a65a";
-        barChartData.datasets[1].strokeColor = "#00a65a";
-        barChartData.datasets[1].pointColor = "#00a65a";
         var barChartOptions = {
             //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
             scaleBeginAtZero: true,

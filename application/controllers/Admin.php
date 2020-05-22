@@ -15,6 +15,24 @@ class Admin extends CI_Controller {
 
 	public function index()
 	{
+		$no=0;
+		$dt_bulan = array();
+		$dt_data_pengguna = array();
+		$dt_data_tanaman = array();
+		$bulan = array('01','02','03','04','05','06','07','08','09','10','11','12');
+		$bulan_nama = array('Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember');
+		foreach ($bulan as $it_bln){
+			$where = date('Y')."-".$it_bln;
+			$dt_bulan[] = $bulan_nama[$no];
+			$dt_data_pengguna[] = $this->M_admin->grafikPengguna($where)->num_rows();
+			$dt_data_tanaman[] = $this->M_admin->grafikTanaman($where)->num_rows();
+			$no++;
+		}
+
+		$data['dt_bulan'] = $dt_bulan;
+		$data['dt_pengguna'] = $dt_data_pengguna;
+		$data['dt_tanaman'] = $dt_data_tanaman;
+
 		$data['tanaman'] = $this->M_admin->getTanaman()->num_rows();
 		$data['pengguna'] = $this->M_admin->getPengguna()->num_rows();
 		$this->template->template_admin('admin/dashboard',$data);
@@ -95,6 +113,8 @@ class Admin extends CI_Controller {
 		$id = $this->uri->segment(3);
 		$data['tanaman'] = $this->M_admin->getTanamanDetail($id)->row();
 		$data['penyiraman'] = $this->M_admin->getTanamanPenyiraman($id)->result();
+		$data['galeri'] = $this->M_admin->getTanamanGaleri($id)->result();
+		$data['evaluasi'] = $this->M_admin->getTanamanEvaluasi($id)->row();
 
 		$dt_judul = array();
 		$dt_data = array();
