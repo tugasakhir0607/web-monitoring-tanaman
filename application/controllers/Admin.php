@@ -82,6 +82,19 @@ class Admin extends CI_Controller {
 		$this->template->template_admin('admin/pengguna_ubah',$data);
 	}
 
+	public function pengguna_hapus_execute(){
+		$where['id_tb_pengguna'] = $this->uri->segment(3);
+		$update['delflage'] = 0;
+		$update['waktu'] = date('Y-m-d H:i:s');
+		if ($this->M_admin->penggunaUbah($where,$update)){
+			$this->session->set_flashdata('info', '<div class="alert alert-success alert-dismissable">Berhasil Menghapus Pengguna</div>');
+			redirect(base_url('Admin/pengguna'));
+		} else {
+			$this->session->set_flashdata('info', '<div class="alert alert-danger alert-dismissable">Gagal Menghapus Pengguna</div>');
+			redirect(base_url('Admin/pengguna'));
+		}
+	}
+
 	public function pengguna_ubah_exe(){
 		$where['id_tb_pengguna'] = $id = $this->input->post('id_tb_pengguna');
 		$update['nama_pengguna'] = $this->input->post('nama_pengguna');

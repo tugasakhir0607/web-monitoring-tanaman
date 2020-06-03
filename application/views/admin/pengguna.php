@@ -48,7 +48,7 @@
 									<td><?= $item->waktu; ?></td>
 									<td>
 										<a href="<?= base_url('Admin/pengguna_ubah/'.$item->id_tb_pengguna); ?>" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Edit</a>
-										<button type="button" class="btn btn-danger btn-block"><i class="fa fa-trash-o"></i> Hapus</button>
+										<a href="<?= base_url('Admin/pengguna_hapus_execute/'.$item->id_tb_pengguna); ?>" onclick="return confirm('Apakah anda yakin?')" class="btn btn-danger btn-block"><i class="fa fa-trash-o"></i> Hapus</a>
 									</td>
 								</tr>
 							<?php endforeach; ?>

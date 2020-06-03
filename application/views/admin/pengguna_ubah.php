@@ -57,7 +57,7 @@
 						</div>
 						<div class="box-footer">
 							<button type="submit" class="btn btn-primary pull-right">Simpan</button>
-							<button type="button" class="btn btn-danger pull-right" style="margin-right: 1px">Batal</button>
+							<button type="button" onclick="history.back()" class="btn btn-danger pull-right" style="margin-right: 1px">Batal</button>
 						</div>
 					</div>
 				</form>
