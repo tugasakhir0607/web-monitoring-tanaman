@@ -144,6 +144,27 @@ class Admin extends CI_Controller {
 		$this->template->template_admin('admin/tanaman_detail',$data);
 	}
 
+	public function laporan()
+	{
+		$data['tahun_pengguna'] = $this->M_admin->year_pengguna()->result();
+		$data['tahun_tanaman'] = $this->M_admin->year_tanaman()->result();
+		$this->template->template_admin('admin/laporan',$data);
+	}
+
+	public function laporan_pengguna(){
+		$tahun = $this->input->get('tahun');
+		$data['data'] = $this->M_admin->laporan_pengguna($tahun);
+		$data['tahun'] = $tahun;
+		$this->load->view('admin/laporan_pengguna',$data);
+	}
+
+	public function laporan_tanaman(){
+		$tahun = $this->input->get('tahun');
+		$data['data'] = $this->M_admin->laporan_tanaman($tahun);
+		$data['tahun'] = $tahun;
+		$this->load->view('admin/laporan_tanaman',$data);
+	}
+
 	public function profil()
 	{
 		$this->template->template_admin('admin/profil');

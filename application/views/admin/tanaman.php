@@ -33,7 +33,7 @@
 								<tr>
 									<td><?= $no; ?></td>
 									<td><a href="<?= base_url('Admin/tanaman_detail/'.$item->id_tb_tanaman); ?>"><?= $item->nama_tanaman; ?></a></td>
-									<td>Setiadi <?= $no; ?></a></td>
+									<td><?= $item->nama_pengguna; ?></a></td>
 									<td><img src="<?= base_url('assets/backend/dist/img/photo2.png');?>" class="img-responsive img-bordered" style="width: 250px"></td>
 									<td><?= $item->waktu; ?></td>
 									<td>

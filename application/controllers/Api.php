@@ -188,16 +188,20 @@ class Api extends CI_Controller {
 	}
 
 	public function api_getKelembaban(){
+		$offset = $this->input->post('offset');
 		$where['id_tb_tanaman'] = $this->input->post('id_tb_tanaman');
-		$stmt = $this->M_api->getKelembaban($where)->result();
-		$this->setJSON(array('result'=>$stmt));
+		$stmt = $this->M_api->getKelembaban($where,$offset)->result();
+		$total = $this->M_api->getKelembaban($where)->num_rows();
+		$this->setJSON(array('result'=>$stmt,'total'=>$total));
 	}
 
 	public function api_getPenyiraman(){
+		$offset = $this->input->post('offset');
 		$where['id_tb_tanaman'] = $this->input->post('id_tb_tanaman');
 		$where['pompa'] = "ON";
-		$stmt = $this->M_api->getPenyiraman($where)->result();
-		$this->setJSON(array('result'=>$stmt));
+		$stmt = $this->M_api->getPenyiraman($where,$offset)->result();
+		$total = $this->M_api->getPenyiraman($where)->num_rows();
+		$this->setJSON(array('result'=>$stmt,'total'=>$total));
 	}
 
 	public function api_getGrafikKelembapan(){

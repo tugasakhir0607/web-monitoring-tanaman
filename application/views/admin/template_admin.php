@@ -100,6 +100,7 @@
                 <li><a href="<?= base_url('Admin');?>"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
                 <li><a href="<?= base_url('Admin/pengguna');?>"><i class="fa fa-users"></i> <span>Daftar Pengguna</span></a></li>
                 <li><a href="<?= base_url('Admin/tanaman');?>"><i class="fa fa-tree"></i> <span>Daftar Tanaman</span></a></li>
+                <li><a href="<?= base_url('Admin/Laporan');?>"><i class="fa fa-tree"></i> <span>Laporan</span></a></li>
             </ul>
         </section>
     </aside>

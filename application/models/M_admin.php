@@ -9,7 +9,9 @@ class M_admin extends CI_Model
 	}
 
     public function getTanaman(){
-        return $this->db->get_where('tb_tanaman',array('delflage'=>1));
+        return $this->db->select('tb_tanaman.*, tb_pengguna.nama_pengguna')
+			->join('tb_pengguna','tb_pengguna.id_tb_pengguna = tb_tanaman.id_tb_pengguna')
+			->get_where('tb_tanaman',array('tb_tanaman.delflage'=>1));
     }
 
     public function getSensor(){
@@ -70,5 +72,25 @@ class M_admin extends CI_Model
 
 	public function grafikTanaman($where){
 		return $this->db->like('waktu',$where)->get('tb_tanaman');
+	}
+
+	public function year_pengguna(){
+		return $this->db->select('YEAR(waktu) as tahun')
+			->group_by('tahun')->get_where('tb_pengguna',array('delflage'=>1));
+	}
+
+	public function year_tanaman(){
+		return $this->db->select('YEAR(waktu) as tahun')
+			->group_by('tahun')->get_where('tb_tanaman',array('delflage'=>1));
+	}
+
+	public function laporan_pengguna($tahun){
+		return $this->db->get_where('tb_pengguna',array('type_pengguna'=>"petani",'delflage'=>1,'YEAR(waktu)'=>$tahun));
+	}
+
+	public function laporan_tanaman($tahun){
+		return $this->db->select('tb_tanaman.*, tb_pengguna.nama_pengguna')
+			->join('tb_pengguna','tb_pengguna.id_tb_pengguna = tb_tanaman.id_tb_pengguna')
+			->get_where('tb_tanaman',array('tb_tanaman.delflage'=>1,'YEAR(tb_tanaman.waktu)'=>$tahun));
 	}
 }

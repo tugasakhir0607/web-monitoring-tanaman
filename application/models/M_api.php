@@ -38,12 +38,20 @@ class M_api extends CI_Model
         return $this->db->get_where('tb_tanaman',$where);
     }
 
-    public function getKelembaban($where){
-        return $this->db->get_where('tb_sensor',$where);
+    public function getKelembaban($where,$offset=NULL){
+        if (!empty($offset)){
+        	$this->db->limit(20,$offset);
+		}
+		return $this->db->order_by('id_tb_sensor',"DESC")
+			->get_where('tb_sensor',$where);
     }
 
-    public function getPenyiraman($where){
-        return $this->db->get_where('tb_sensor',$where);
+    public function getPenyiraman($where,$offset=NULL){
+		if (!empty($offset)){
+			$this->db->limit(20,$offset);
+		}
+        return $this->db->order_by('id_tb_sensor',"DESC")
+			->get_where('tb_sensor',$where);
     }
 	
 	public function getGrafikKelembapan($where){
