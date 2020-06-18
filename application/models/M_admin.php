@@ -41,6 +41,11 @@ class M_admin extends CI_Model
 			->get_where('tb_tanaman',array('tb_tanaman.id_tb_tanaman'=>$id));
 	}
 
+	public function tanaman_pengguna_ubah($where,$update)
+	{
+		return $this->db->where($where)->update('tb_tanaman',$update);
+	}
+
 	public function getTanamanPenyiraman($id){
 		return $this->db->select('DATE(waktu) as tgl, TIME(waktu) as wkt')->order_by('id_tb_tanaman')
 			->get_where('tb_sensor',array('id_tb_tanaman'=>$id,'pompa'=>"ON"));

@@ -27,7 +27,8 @@
 								</select>
 							</div>
 							<div class="form-group">
-								<button type="submit" class="btn btn-primary pull-right">CETAK</button>
+								<button type="submit" class="btn btn-primary pull-right" style="margin: 1px" name="tipe" value="excel">CETAK EXCEL</button>
+								<button type="submit" class="btn btn-primary pull-right" style="margin: 1px" name="tipe" value="pdf">CETAK PDF</button>
 							</div>
 						</form>
 					</div>
@@ -49,7 +50,8 @@
 								</select>
 							</div>
 							<div class="form-group">
-								<button type="submit" class="btn btn-primary pull-right">CETAK</button>
+								<button type="submit" class="btn btn-primary pull-right" style="margin: 1px" name="tipe" value="excel">CETAK EXCEL</button>
+								<button type="submit" class="btn btn-primary pull-right" style="margin: 1px" name="tipe" value="pdf">CETAK PDF</button>
 							</div>
 						</form>
 					</div>

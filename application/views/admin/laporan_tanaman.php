@@ -44,7 +44,7 @@
 						<th>Nama Tanaman</th>
 						<th>Nama Pengguna</th>
 						<th>Penyiraman Perhari</th>
-						<th>deskripsi_tanaman</th>
+						<th>Deskripsi Tanaman</th>
 						<th>Tanggal Penanaman</th>
 					</tr>
 					</thead>

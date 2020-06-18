@@ -144,6 +144,32 @@ class Admin extends CI_Controller {
 		$this->template->template_admin('admin/tanaman_detail',$data);
 	}
 
+	public function tanaman_pengguna_ubah()
+	{
+		$id_tb_pengguna = $this->uri->segment(3);
+		$id_tb_tanaman = $this->uri->segment(4);
+		$data['tanaman'] = $this->M_admin->getTanamanDetail($id_tb_tanaman)->row();
+		$data['pengguna'] = $this->M_admin->getPenggunaDetail($id_tb_pengguna)->row();
+		$data['data'] = $this->M_admin->getPengguna()->result();
+		$this->template->template_admin('admin/tanaman_pengguna_ubah',$data);
+	}
+
+	public function tanaman_pengguna_ubah_exe()
+	{
+		$id_tb_tanaman = $this->input->post('id_tb_tanaman');
+		$id_tb_pengguna = $this->input->post('id_tb_pengguna');
+
+		$where['id_tb_tanaman'] = $id_tb_tanaman;
+		$update['id_tb_pengguna'] = $id_tb_pengguna;
+		if ($this->M_admin->tanaman_pengguna_ubah($where,$update)){
+			$this->session->set_flashdata('info', '<div class="alert alert-success alert-dismissable">Berhasil Mengubah Pengguna</div>');
+			redirect(base_url('Admin/tanaman_detail/'.$id_tb_tanaman));
+		} else {
+			$this->session->set_flashdata('info', '<div class="alert alert-danger alert-dismissable">Gagal Mengubah Pengguna</div>');
+			redirect(base_url('Admin/tanaman_detail/'.$id_tb_pengguna."/".$id_tb_tanaman));
+		}
+	}
+
 	public function laporan()
 	{
 		$data['tahun_pengguna'] = $this->M_admin->year_pengguna()->result();
@@ -153,16 +179,216 @@ class Admin extends CI_Controller {
 
 	public function laporan_pengguna(){
 		$tahun = $this->input->get('tahun');
-		$data['data'] = $this->M_admin->laporan_pengguna($tahun);
-		$data['tahun'] = $tahun;
-		$this->load->view('admin/laporan_pengguna',$data);
+		$stmt = $this->M_admin->laporan_pengguna($tahun);;
+		if ($this->input->get('tipe')=="pdf"){
+			$data['data'] = $stmt;
+			$data['tahun'] = $tahun;
+			$this->load->view('admin/laporan_pengguna',$data);
+		} else {
+			$this->load->library('Excel_generator');
+			$excel = new PHPExcel();
+			$excel->getProperties()->setCreator('Laporan Daftar Pengguna')
+				->setLastModifiedBy('Laporan Daftar Pengguna')
+				->setTitle("Laporan Daftar Pengguna")
+				->setSubject("Laporan Daftar Pengguna")
+				->setDescription("Laporan Daftar Pengguna")
+				->setKeywords("Laporan Daftar Pengguna");
+
+			$style_col = array(  'font' => array('bold' => true),
+				'alignment' => array(
+					'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+					'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+				),
+				'borders' => array(
+					'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN)
+				)
+			);
+
+			$style_row = array(
+				'alignment' => array(
+					'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+				),
+				'borders' => array(
+					'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN)
+				)
+			);
+
+			$excel->setActiveSheetIndex(0)->setCellValue('A1', "Laporan Daftar Pengguna Tahun ".$tahun);
+			$excel->getActiveSheet()->mergeCells('A1:G1');
+
+			$excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(TRUE);
+			$excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(15);
+			$excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+			$excel->setActiveSheetIndex(0)->setCellValue('A3', "NO");
+			$excel->setActiveSheetIndex(0)->setCellValue('B3', "Nama");
+			$excel->setActiveSheetIndex(0)->setCellValue('C3', "Nomor HP");
+			$excel->setActiveSheetIndex(0)->setCellValue('D3', "E-mail");
+			$excel->setActiveSheetIndex(0)->setCellValue('E3', "Jenis Kelamin");
+			$excel->setActiveSheetIndex(0)->setCellValue('F3', "Alamat");
+			$excel->setActiveSheetIndex(0)->setCellValue('G3', "Waktu");
+
+			$excel->getActiveSheet()->getStyle('A3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('B3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('C3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('D3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('E3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('F3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('G3')->applyFromArray($style_col);
+
+			$excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
+			$excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
+			$excel->getActiveSheet()->getRowDimension('3')->setRowHeight(20);
+
+			$no = 1;
+			$numrow = 4;
+			foreach($stmt->result() as $item) {
+				$excel->setActiveSheetIndex(0)->setCellValue('A' . $numrow, $no);
+				$excel->setActiveSheetIndex(0)->setCellValue('B' . $numrow, $item->nama_pengguna);
+				$excel->setActiveSheetIndex(0)->setCellValueExplicit('C' . $numrow, $item->nohp_pengguna, PHPExcel_Cell_DataType::TYPE_STRING);
+				$excel->setActiveSheetIndex(0)->setCellValue('D' . $numrow, $item->email_pengguna);
+				$excel->setActiveSheetIndex(0)->setCellValue('E' . $numrow, $item->sex_pengguna);
+				$excel->setActiveSheetIndex(0)->setCellValue('F' . $numrow, $item->alamat_pengguna);
+				$excel->setActiveSheetIndex(0)->setCellValue('G' . $numrow, $item->waktu);
+
+				$excel->getActiveSheet()->getRowDimension($numrow)->setRowHeight(20);
+				$no++;
+				$numrow++;
+			}
+
+			$excel->getActiveSheet()->getColumnDimension('A')->setWidth(5);
+			$excel->getActiveSheet()->getColumnDimension('B')->setWidth(50);
+			$excel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+			$excel->getActiveSheet()->getColumnDimension('D')->setWidth(30);
+			$excel->getActiveSheet()->getColumnDimension('E')->setWidth(20);
+			$excel->getActiveSheet()->getColumnDimension('F')->setWidth(10);
+			$excel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
+
+			$excel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
+			$excel->getActiveSheet(0)->setTitle("Laporan Daftar Pengguna");
+			$excel->setActiveSheetIndex(0);
+
+			// Proses file excel
+			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+			header('Content-Disposition: attachment; filename="Laporan Daftar Pengguna.xlsx"');
+
+			// Set nama file excel nya
+			header('Cache-Control: max-age=0');
+			$write = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+			$write->save('php://output');
+		}
+
 	}
 
 	public function laporan_tanaman(){
 		$tahun = $this->input->get('tahun');
-		$data['data'] = $this->M_admin->laporan_tanaman($tahun);
-		$data['tahun'] = $tahun;
-		$this->load->view('admin/laporan_tanaman',$data);
+		$stmt = $this->M_admin->laporan_tanaman($tahun);
+		if ($this->input->get('tipe')=="pdf"){
+			$tahun = $tahun;
+			$data['data'] = $stmt;
+			$data['tahun'] = $tahun;
+			$this->load->view('admin/laporan_tanaman',$data);
+		} else {
+			$this->load->library('Excel_generator');
+			$excel = new PHPExcel();
+			$excel->getProperties()->setCreator('Laporan Daftar Tanaman')
+				->setLastModifiedBy('Laporan Daftar Tanaman')
+				->setTitle("Laporan Daftar Tanaman")
+				->setSubject("Laporan Daftar Tanaman")
+				->setDescription("Laporan Daftar Tanaman")
+				->setKeywords("Laporan Daftar Tanaman");
+
+			$style_col = array(  'font' => array('bold' => true),
+				'alignment' => array(
+					'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+					'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+				),
+				'borders' => array(
+					'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN)
+				)
+			);
+
+			$style_row = array(
+				'alignment' => array(
+					'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+				),
+				'borders' => array(
+					'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+					'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN)
+				)
+			);
+
+			$excel->setActiveSheetIndex(0)->setCellValue('A1', "Laporan Daftar Tanaman Tahun ".$tahun);
+			$excel->getActiveSheet()->mergeCells('A1:G1');
+
+			$excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(TRUE);
+			$excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(15);
+			$excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+			$excel->setActiveSheetIndex(0)->setCellValue('A3', "NO");
+			$excel->setActiveSheetIndex(0)->setCellValue('B3', "Nama Tanaman");
+			$excel->setActiveSheetIndex(0)->setCellValue('C3', "Nama Pengguna");
+			$excel->setActiveSheetIndex(0)->setCellValue('D3', "Penyiraman Perhari");
+			$excel->setActiveSheetIndex(0)->setCellValue('E3', "Deskripsi Tanaman");
+			$excel->setActiveSheetIndex(0)->setCellValue('F3', "Tanggal Penanaman");
+
+			$excel->getActiveSheet()->getStyle('A3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('B3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('C3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('D3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('E3')->applyFromArray($style_col);
+			$excel->getActiveSheet()->getStyle('F3')->applyFromArray($style_col);
+
+			$excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
+			$excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
+			$excel->getActiveSheet()->getRowDimension('3')->setRowHeight(20);
+
+			$no = 1;
+			$numrow = 4;
+			foreach($stmt->result() as $item) {
+				$excel->setActiveSheetIndex(0)->setCellValue('A' . $numrow, $no);
+				$excel->setActiveSheetIndex(0)->setCellValue('B' . $numrow, $item->nama_tanaman);
+				$excel->setActiveSheetIndex(0)->setCellValue('C' . $numrow, $item->nama_pengguna);
+				$excel->setActiveSheetIndex(0)->setCellValue('D' . $numrow, $item->penyiraman_tanaman);
+				$excel->setActiveSheetIndex(0)->setCellValue('E' . $numrow, $item->deskripsi_tanaman);
+				$excel->setActiveSheetIndex(0)->setCellValue('F' . $numrow, $item->waktu);
+
+				$excel->getActiveSheet()->getRowDimension($numrow)->setRowHeight(20);
+				$no++;
+				$numrow++;
+			}
+
+			$excel->getActiveSheet()->getColumnDimension('A')->setWidth(5);
+			$excel->getActiveSheet()->getColumnDimension('B')->setWidth(50);
+			$excel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+			$excel->getActiveSheet()->getColumnDimension('D')->setWidth(30);
+			$excel->getActiveSheet()->getColumnDimension('E')->setWidth(40);
+			$excel->getActiveSheet()->getColumnDimension('F')->setWidth(30);
+
+			$excel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
+			$excel->getActiveSheet(0)->setTitle("Laporan Daftar Pengguna");
+			$excel->setActiveSheetIndex(0);
+
+			// Proses file excel
+			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+			header('Content-Disposition: attachment; filename="Laporan Daftar Tanaman.xlsx"');
+
+			// Set nama file excel nya
+			header('Cache-Control: max-age=0');
+			$write = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+			$write->save('php://output');
+		}
 	}
 
 	public function profil()

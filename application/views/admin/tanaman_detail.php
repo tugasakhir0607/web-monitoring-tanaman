@@ -46,6 +46,9 @@
 									<label for="deskripsi_tanaman">Deskripsi Tanaman</label>
 									<textarea class="form-control" id="deskripsi_tanaman" name="deskripsi_tanaman" placeholder="Masukan Deskripsi Tanaman" rows="5" disabled><?= $tanaman->deskripsi_tanaman; ?></textarea>
 								</div>
+								<div class="form-group">
+									<a href="<?= base_url('Admin/tanaman_pengguna_ubah/'.$tanaman->id_tb_pengguna."/".$tanaman->id_tb_tanaman); ?>" class="btn btn-primary">Ubah Pengguna</a>
+								</div>
 							</div>
 						</div>
 						<div class="tab-pane" id="pengguna">
