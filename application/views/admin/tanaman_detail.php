@@ -78,6 +78,7 @@
 							</div>
 						</div>
 						<div class="tab-pane" id="penyiraman">
+							<a href="<?= base_url('Admin/laporan_penyiraman_excel/'.$tanaman->id_tb_tanaman); ?>" class="btn btn-primary" style="margin: 5px;">CETAK EXCEL</a>
 							<table id="example1" class="table table-bordered table-striped">
 								<thead>
 								<tr>
@@ -118,6 +119,7 @@
 <!--							</table>-->
 <!--						</div>-->
 						<div class="tab-pane" id="kelembaban">
+							<a href="<?= base_url('Admin/laporan_kelembaban_excel/'.$tanaman->id_tb_tanaman); ?>" class="btn btn-primary" style="margin: 5px;">CETAK EXCEL</a>
 							<table id="example3" class="table table-bordered table-striped">
 								<thead>
 								<tr>

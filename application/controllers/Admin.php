@@ -144,6 +144,192 @@ class Admin extends CI_Controller {
 		$this->template->template_admin('admin/tanaman_detail',$data);
 	}
 
+	public function laporan_penyiraman_excel(){
+		$id = $this->uri->segment(3);
+		$tanaman = $this->M_admin->getTanamanDetail($id)->row();
+		$penyiraman = $this->M_admin->getTanamanPenyiraman($id)->result();
+
+		$this->load->library('Excel_generator');
+		$excel = new PHPExcel();
+		$excel->getProperties()->setCreator('Laporan Penyiraman Tanaman')
+			->setLastModifiedBy('Laporan Penyiraman Tanaman')
+			->setTitle("Laporan Penyiraman Tanaman")
+			->setSubject("Laporan Penyiraman Tanaman")
+			->setDescription("Laporan Penyiraman Tanaman")
+			->setKeywords("Laporan Penyiraman Tanaman");
+
+		$style_col = array(  'font' => array('bold' => true),
+			'alignment' => array(
+				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+				'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+			),
+			'borders' => array(
+				'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN)
+			)
+		);
+
+		$style_row = array(
+			'alignment' => array(
+				'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+			),
+			'borders' => array(
+				'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN)
+			)
+		);
+
+		$excel->setActiveSheetIndex(0)->setCellValue('A1', "Laporan Penyiraman Tanaman".$tanaman->nama_tanaman);
+		$excel->getActiveSheet()->mergeCells('A1:C1');
+
+		$excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(TRUE);
+		$excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(15);
+		$excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+		$excel->setActiveSheetIndex(0)->setCellValue('A3', "NO");
+		$excel->setActiveSheetIndex(0)->setCellValue('B3', "Tanggal");
+		$excel->setActiveSheetIndex(0)->setCellValue('C3', "Jam");
+
+		$excel->getActiveSheet()->getStyle('A3')->applyFromArray($style_col);
+		$excel->getActiveSheet()->getStyle('B3')->applyFromArray($style_col);
+		$excel->getActiveSheet()->getStyle('C3')->applyFromArray($style_col);
+
+		$excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
+		$excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
+		$excel->getActiveSheet()->getRowDimension('3')->setRowHeight(20);
+
+		$no = 1;
+		$numrow = 4;
+		foreach($penyiraman as $item) {
+			$excel->setActiveSheetIndex(0)->setCellValue('A' . $numrow, $no);
+			$excel->setActiveSheetIndex(0)->setCellValue('B' . $numrow, $item->tgl);
+			$excel->setActiveSheetIndex(0)->setCellValue('C' . $numrow, $item->wkt);
+
+			$excel->getActiveSheet()->getRowDimension($numrow)->setRowHeight(20);
+			$no++;
+			$numrow++;
+		}
+
+		$excel->getActiveSheet()->getColumnDimension('A')->setWidth(5);
+		$excel->getActiveSheet()->getColumnDimension('B')->setWidth(30);
+		$excel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+
+		$excel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
+		$excel->getActiveSheet(0)->setTitle("Laporan Penyiraman Tanaman");
+		$excel->setActiveSheetIndex(0);
+
+		// Proses file excel
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment; filename="Laporan Penyiraman Tanaman '.$tanaman->nama_tanaman.'.xlsx"');
+
+		// Set nama file excel nya
+		header('Cache-Control: max-age=0');
+		$write = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+		$write->save('php://output');
+	}
+
+	public function laporan_kelembaban_excel(){
+		$id = $this->uri->segment(3);
+		$tanaman = $this->M_admin->getTanamanDetail($id)->row();
+		$sensor = $this->M_admin->getSensor()->result();
+
+		$this->load->library('Excel_generator');
+		$excel = new PHPExcel();
+		$excel->getProperties()->setCreator('Laporan Kelembaban Tanaman')
+			->setLastModifiedBy('Laporan Kelembaban Tanaman')
+			->setTitle("Laporan Kelembaban Tanaman")
+			->setSubject("Laporan Kelembaban Tanaman")
+			->setDescription("Laporan Kelembaban Tanaman")
+			->setKeywords("Laporan Kelembaban Tanaman");
+
+		$style_col = array(  'font' => array('bold' => true),
+			'alignment' => array(
+				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+				'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+			),
+			'borders' => array(
+				'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN)
+			)
+		);
+
+		$style_row = array(
+			'alignment' => array(
+				'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+			),
+			'borders' => array(
+				'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),
+				'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN)
+			)
+		);
+
+		$excel->setActiveSheetIndex(0)->setCellValue('A1', "Laporan Kelembaban Tanaman".$tanaman->nama_tanaman);
+		$excel->getActiveSheet()->mergeCells('A1:E1');
+
+		$excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(TRUE);
+		$excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(15);
+		$excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+		$excel->setActiveSheetIndex(0)->setCellValue('A3', "NO");
+		$excel->setActiveSheetIndex(0)->setCellValue('B3', "Kelembaban");
+		$excel->setActiveSheetIndex(0)->setCellValue('C3', "Pompa");
+		$excel->setActiveSheetIndex(0)->setCellValue('D3', "Tanaman");
+		$excel->setActiveSheetIndex(0)->setCellValue('E3', "Waktu");
+
+		$excel->getActiveSheet()->getStyle('A3')->applyFromArray($style_col);
+		$excel->getActiveSheet()->getStyle('B3')->applyFromArray($style_col);
+		$excel->getActiveSheet()->getStyle('C3')->applyFromArray($style_col);
+		$excel->getActiveSheet()->getStyle('D3')->applyFromArray($style_col);
+		$excel->getActiveSheet()->getStyle('E3')->applyFromArray($style_col);
+
+		$excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
+		$excel->getActiveSheet()->getRowDimension('2')->setRowHeight(30);
+		$excel->getActiveSheet()->getRowDimension('3')->setRowHeight(30);
+		$excel->getActiveSheet()->getRowDimension('4')->setRowHeight(30);
+		$excel->getActiveSheet()->getRowDimension('5')->setRowHeight(30);
+
+		$no = 1;
+		$numrow = 4;
+		foreach($sensor as $item) {
+			$excel->setActiveSheetIndex(0)->setCellValue('A' . $numrow, $no);
+			$excel->setActiveSheetIndex(0)->setCellValue('B' . $numrow, $item->kelembapan);
+			$excel->setActiveSheetIndex(0)->setCellValue('C' . $numrow, $item->pompa);
+			$excel->setActiveSheetIndex(0)->setCellValue('D' . $numrow, $item->keterangan);
+			$excel->setActiveSheetIndex(0)->setCellValue('E' . $numrow, $item->waktu);
+
+			$excel->getActiveSheet()->getRowDimension($numrow)->setRowHeight(20);
+			$no++;
+			$numrow++;
+		}
+
+		$excel->getActiveSheet()->getColumnDimension('A')->setWidth(5);
+		$excel->getActiveSheet()->getColumnDimension('B')->setWidth(30);
+		$excel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+		$excel->getActiveSheet()->getColumnDimension('D')->setWidth(30);
+		$excel->getActiveSheet()->getColumnDimension('E')->setWidth(30);
+
+		$excel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
+		$excel->getActiveSheet(0)->setTitle("Laporan Kelembaban Tanaman");
+		$excel->setActiveSheetIndex(0);
+
+		// Proses file excel
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment; filename="Laporan Kelembaban Tanaman '.$tanaman->nama_tanaman.'.xlsx"');
+
+		// Set nama file excel nya
+		header('Cache-Control: max-age=0');
+		$write = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+		$write->save('php://output');
+	}
+
 	public function tanaman_pengguna_ubah()
 	{
 		$id_tb_pengguna = $this->uri->segment(3);
